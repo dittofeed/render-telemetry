@@ -11,15 +11,12 @@ services:
         sync: false
       - key: CLICKHOUSE_PORT
         value: "8123"
-        sync: false
       - key: CLICKHOUSE_PROTO
         value: "https"
-        sync: false
       - key: CLICKHOUSE_AUTH
         sync: false
       - key: CLICKHOUSE_DB
         value: "qryn"
-        sync: false
       - key: PORT
         value: "3100"
 
