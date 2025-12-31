@@ -19,8 +19,10 @@ Set these in the Render Dashboard after deploying:
 | Service | Variable | Format | Description |
 |---------|----------|--------|-------------|
 | qryn | `CLICKHOUSE_SERVER` | `hostname` | ClickHouse host (no protocol or port) |
-| qryn | `CLICKHOUSE_PORT` | `number` | ClickHouse port (e.g., `8443` for Altinity Cloud) |
+| qryn | `CLICKHOUSE_PORT` | `number` | ClickHouse port (e.g., `8443`) |
+| qryn | `CLICKHOUSE_PROTO` | `http` or `https` | ClickHouse protocol |
 | qryn | `CLICKHOUSE_AUTH` | `username:password` | ClickHouse credentials |
+| qryn | `CLICKHOUSE_DB` | `string` | ClickHouse database name |
 | grafana | `GF_SECURITY_ADMIN_PASSWORD` | `string` | Grafana admin password |
 
 Example for `https://clickhouse-db.example.cloud:8443`:
@@ -28,17 +30,9 @@ Example for `https://clickhouse-db.example.cloud:8443`:
 CLICKHOUSE_SERVER=clickhouse-db.example.cloud
 CLICKHOUSE_PORT=8443
 CLICKHOUSE_PROTO=https
+CLICKHOUSE_AUTH=user:password
+CLICKHOUSE_DB=qryn
 ```
-
-### Default Values
-
-| Service | Variable | Default |
-|---------|----------|---------|
-| qryn | `CLICKHOUSE_PORT` | `8123` |
-| qryn | `CLICKHOUSE_PROTO` | `https` |
-| qryn | `CLICKHOUSE_DB` | `qryn` |
-
-**Note:** Override `CLICKHOUSE_PORT` if your provider uses a non-standard port (e.g., Altinity Cloud uses `8443`).
 
 ## Endpoints
 
