@@ -1,0 +1,64 @@
+services:
+  # qryn - Polyglot observability backend (Loki/Prometheus/Tempo compatible)
+  - type: pserv
+    name: qryn
+    runtime: image
+    image:
+      url: ghcr.io/metrico/qryn:latest
+    plan: starter
+    envVars:
+      - key: CLICKHOUSE_SERVER
+        sync: false
+      - key: CLICKHOUSE_PORT
+        value: "8123"
+        sync: false
+      - key: CLICKHOUSE_PROTO
+        value: "https"
+        sync: false
+      - key: CLICKHOUSE_AUTH
+        sync: false
+      - key: CLICKHOUSE_DB
+        value: "qryn"
+        sync: false
+      - key: PORT
+        value: "3100"
+
+  # OpenTelemetry Collector - receives OTLP and forwards to qryn
+  - type: pserv
+    name: otel-collector
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    envVars:
+      - key: QRYN_HOST
+        fromService:
+          type: pserv
+          name: qryn
+          property: host
+      - key: QRYN_PORT
+        value: "3100"
+
+  # Grafana - Visualization dashboard
+  - type: web
+    name: grafana
+    runtime: image
+    image:
+      url: grafana/grafana:latest
+    plan: starter
+    envVars:
+      - key: GF_SERVER_HTTP_PORT
+        value: "3000"
+      - key: GF_SECURITY_ADMIN_PASSWORD
+        sync: false
+      - key: GF_PATHS_DATA
+        value: "/var/lib/grafana"
+      # qryn as Loki datasource
+      - key: QRYN_HOST
+        fromService:
+          type: pserv
+          name: qryn
+          property: host
+    disk:
+      name: grafana-data
+      mountPath: /var/lib/grafana
+      sizeGB: 1
