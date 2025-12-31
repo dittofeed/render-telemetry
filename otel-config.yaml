@@ -24,7 +24,7 @@ exporters:
 
   # Debug logging (optional, can be removed in production)
   debug:
-    verbosity: detailed
+    verbosity: basic
 
 service:
   pipelines:
