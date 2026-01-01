@@ -26,9 +26,15 @@ connectors:
     metrics_flush_interval: 15s
 
 exporters:
-  # Export traces to qryn via Tempo/Zipkin API
+  # Export traces/logs to qryn via OTLP
   otlphttp/qryn:
     endpoint: http://${env:QRYN_HOST}:${env:QRYN_PORT}
+    tls:
+      insecure: true
+
+  # Export metrics to qryn via Prometheus remote write
+  prometheusremotewrite/qryn:
+    endpoint: http://${env:QRYN_HOST}:${env:QRYN_PORT}/api/v1/prom/remote/write
     tls:
       insecure: true
 
@@ -45,7 +51,7 @@ service:
     metrics:
       receivers: [otlp, spanmetrics]
       processors: [memory_limiter, batch]
-      exporters: [otlphttp/qryn, debug]
+      exporters: [prometheusremotewrite/qryn, debug]
     logs:
       receivers: [otlp]
       processors: [memory_limiter, batch]
