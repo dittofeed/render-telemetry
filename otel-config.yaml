@@ -15,6 +15,19 @@ processors:
     limit_percentage: 75
     spike_limit_percentage: 25
 
+connectors:
+  # Generate metrics from spans (R.E.D: Request, Error, Duration)
+  spanmetrics:
+    histogram:
+      explicit:
+        buckets: [5ms, 10ms, 25ms, 50ms, 100ms, 250ms, 500ms, 1s, 2.5s, 5s, 10s]
+    dimensions:
+      - name: span.name
+      - name: status.code
+    dimensions_cache_size: 1000
+    aggregation_temporality: AGGREGATION_TEMPORALITY_CUMULATIVE
+    metrics_flush_interval: 15s
+
 exporters:
   # Export traces to qryn via Tempo/Zipkin API
   otlphttp/qryn:
@@ -31,9 +44,9 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [otlphttp/qryn, debug]
+      exporters: [otlphttp/qryn, spanmetrics, debug]
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, spanmetrics]
       processors: [memory_limiter, batch]
       exporters: [otlphttp/qryn, debug]
     logs:

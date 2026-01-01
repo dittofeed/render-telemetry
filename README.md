@@ -52,3 +52,24 @@ Configure these data sources in Grafana to query qryn:
 | Loki (logs) | `http://qryn:3100` |
 | Tempo (traces) | `http://qryn:3100` |
 | Prometheus (metrics) | `http://qryn:3100` |
+
+## Span Metrics
+
+The OTEL collector generates R.E.D (Request, Error, Duration) metrics from traces via the spanmetrics connector. These are exported as Prometheus metrics:
+
+| Metric | Description |
+|--------|-------------|
+| `traces_spanmetrics_calls_total` | Total span count by service/operation |
+| `traces_spanmetrics_duration_milliseconds_*` | Span duration histogram |
+
+Query examples in Grafana (Prometheus data source):
+```promql
+# Span rate by operation
+rate(traces_spanmetrics_calls_total{span_name="compute-properties-incremental"}[5m])
+
+# Error rate
+rate(traces_spanmetrics_calls_total{status_code="STATUS_CODE_ERROR"}[5m])
+
+# P95 latency
+histogram_quantile(0.95, rate(traces_spanmetrics_duration_milliseconds_bucket[5m]))
+```
